@@ -8,5 +8,8 @@ algos/*
 dist/*
 !dist/.gitkeep
 
+python-algo/documentation/*
+python-algo/scripts/*
+
 *.zip
 */.idea/*
