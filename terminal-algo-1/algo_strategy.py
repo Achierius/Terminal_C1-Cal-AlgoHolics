@@ -48,7 +48,7 @@ class FirstAlgo(gamelib.AlgoCore):
         game_state.enable_warnings = False
 
         self.defense(game_state)
-        self.attack(game_state)
+        self.offensive_strategy(game_state)
 
         game_state.submit_turn()
 
