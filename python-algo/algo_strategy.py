@@ -236,6 +236,73 @@ class AlgoStrategy(gamelib.AlgoCore):
                 gamelib.debug_write("All locations: {}".format(self.scored_on_locations))
 
 
+    def offensive_strategy(self, game_state):
+        our_resources, enemy_resources = game_state.get_resources(player_index=0), game_state.get_resources(player_index=1)
+
+        # Switch focus to "defensive" offensive
+        if enemy_resources[1] >= 10:
+            start_locs = [[13, 0], [14, 0]]
+            for i in range(math.ceil(enemy_resources[1] / 5) - 1):
+                game_state.attempt_spawn(game_state.SCRAMBLER, start_locs[i % 2])
+        else:
+            prob = random.random()
+            if prob <= 0.1:
+                return
+
+            attack_positions_left = self.filter_blocked_locations([[i, 13 - i] for i in range(14)], game_state)
+            attack_positions_right = self.filter_blocked_locations([[i + 14, i] for i in range(14)], game_state)
+
+            # Evaluate defensive rating
+            attack_rating_single = []
+            attack_rating_double = []
+            for attack_pos in attack_positions_left + attack_positions_right:
+                hit_profit, damage, i = [0], 0, 0
+                path = game_state.find_path_to_edge(attack_pos)
+                path_length = len(path)
+                for loc in path:
+                    encounters = self.game_map.get_locations_in_range(loc, game_state.EMP.get('attackRange', 0))
+                    offensive_hits = len([game_state.contains_stationary_unit(unit) for unit in encounters])
+                    defensive_hits = game_state.get_attackers(loc, 1)
+                    if defensive_hits + damage <= 2:
+                        hit_profit.append((offensive_hits - defensive_hits + hit_profit[i]))
+                        damage += defensive_hits
+                        i += 1
+                        if damage >= 1:
+                            attack_rating_single.append((attack_pos, max(hit_profit), path_length))
+                    else:
+                        break
+                attack_rating_double.append((attack_pos, max(hit_profit), path_length))
+            attack_rating_single.sort(key=lambda x: x[1], reverse=True)
+            attack_rating_double.sort(key=lambda x: x[1], reverse=True)
+            top_pos_single, top_pos_double = attack_rating_single[:2], attack_rating_double[:2]
+
+            num_emp = game_state.number_affordable(game_state.EMP)
+            emp_deployed = 0
+            total_hits = 0
+            if game_state.turn_number < 30:
+                for i in range(2):
+                    if attack_rating_double[i][1] >= 1.5*attack_rating_single[0][1]:
+                        if num_emp >= 2 and prob > 0.5:
+                            game_state.attempt_spawn(game_state.EMP, top_pos_double[i], num=2)
+                            num_emp -= 2
+                            emp_deployed += 2
+                            total_hits += attack_rating_double[i][1]
+                    elif attack_rating_single[i][1] >= 7:
+                        if num_emp >= 2 and prob > 0.33:
+                            game_state.attempt_spawn(game_state.EMP, top_pos_single[i], num=2)
+                            num_emp -= 2
+                            emp_deployed += 2
+                            total_hits += attack_rating_single[i][1]
+
+                if emp_deployed > 0:
+                    cost = our_resources[1] - emp_deployed
+                    if total_hits >= 15:
+                        game_state.attempt_spawn(game_state.PING, sorted(attack_rating_single, key=lambda x: x[2])[0], num=cost)
+            else:
+                game_state.attempt_spawn(game_state.EMP, top_pos_double[0], num=num_emp)
+
+
+
 if __name__ == "__main__":
     algo = AlgoStrategy()
     algo.start()
