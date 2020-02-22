@@ -1,0 +1,13 @@
+Beautiful
+[[0, 13], [27, 13], [1, 13], [26, 13], [2, 13], [25, 13], [3, 12], [24, 12], [4, 11], [23, 11], [5, 10], [22, 10], [6, 9], [21, 9], [7, 8], [20, 8], [8, 7], [19, 7], [9, 7], [18, 7], [10, 7], [17, 7], [11, 7], [16, 7], [12, 7], [15, 7], [12, 8], [15, 8], [12, 9], [15, 9], [12, 10], [15, 10], [12, 11], [15, 11], [12, 12], [15, 12]]
+---------------- Starting Your Algo --------------------
+FF deployed at [0, 13]
+FF deployed at [27, 13]
+FF deployed at [1, 12]
+FF deployed at [26, 12]
+DF deployed at [2, 11]
+DF deployed at [25, 11]
+DF deployed at [6, 11]
+DF deployed at [21, 11]
+DF deployed at [11, 11]
+Got EOF, parent game process must have died, exiting for cleanup
