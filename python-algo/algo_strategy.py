@@ -74,7 +74,7 @@ class FirstAlgo(gamelib.AlgoCore):
         pqueue = sorted(pqueue, key = lambda x: x[0], reverse = True)
 
         for item in pqueue:
-            build(game_state, item)
+            self.build(game_state, item)
 
     def on_game_start(self, config):
         self.config = config;
