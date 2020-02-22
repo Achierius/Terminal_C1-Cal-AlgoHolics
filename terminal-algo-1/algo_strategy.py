@@ -1,4 +1,5 @@
 import gamelib
+import json
 
 class FirstAlgo(gamelib.AlgoCore):
 
@@ -32,7 +33,7 @@ class FirstAlgo(gamelib.AlgoCore):
                 x += x_increment
                 y += y_increment
 
-        self.basic_template = {'filters': all_filters}
+        self.basic_template = {'filters': all_filters, 'destructors': [[11, 12], [16, 12], [1, 12], [26, 12], [12, 5], [15, 5]]}
         gamelib.debug_write("Beautiful")
         gamelib.debug_write(self.basic_template['filters'])
 
@@ -40,6 +41,7 @@ class FirstAlgo(gamelib.AlgoCore):
         self.config = config;
         global FILTER, ENCRYPTOR, DESTRUCTOR, PING, EMP, SCRAMBLER, UNIT_TO_ID
         FILTER, ENCRYPTOR, DESTRUCTOR, PING, EMP, SCRAMBLER = [config['unitInformation'][idx]["shorthand"] for idx in range(6)]
+        self.scored_on_locations = []
 
     def on_turn(self, turn_state):
         game_state = gamelib.GameState(self.config, turn_state)
@@ -66,8 +68,15 @@ class FirstAlgo(gamelib.AlgoCore):
         return True
 
     def defense(self, game_state):
-        filters = self.basic_template['filters']
-        if not self.build_defenses(filters, FILTER, game_state):
+
+
+        if not self.build_defenses(self.basic_template['filters'][:len(self.basic_template['filters']) // 2], FILTER, game_state):
+            return
+
+        if not self.build_defenses(self.basic_template['destructors'], DESTRUCTOR, game_state):
+            return
+
+        if not self.build_defenses(self.basic_template['filters'][len(self.basic_template['filters']) // 2:], FILTER, game_state):
             return
 
         row = 11
@@ -79,8 +88,38 @@ class FirstAlgo(gamelib.AlgoCore):
         # if not self.build_defenses(filters, FILTER, game_state, row=row):
         #     return
 
+    def reactive_defense(self, game_state):
+        for loc in self.scored_on_locations:
+            gamelib.debug_write("updating most important filters")
+            if 0 < loc[0] < 8:
+                self.basic_template['filters'].insert(0, self.basic_template['filters'].pop(self.basic_template['filters'].index([loc[0] + 1, loc[1] + 1])))
+            elif 27 > loc[0] > 19:
+                self.basic_template['filters'].insert(0, self.basic_template['filters'].pop(self.basic_template['filters'].index([loc[0] - 1, loc[1] + 1])))
+
+
     def attack(self, game_state):
         pass
+
+    def on_action_frame(self, turn_string):
+        """
+        This is the action frame of the game. This function could be called
+        hundreds of times per turn and could slow the algo down so avoid putting slow code here.
+        Processing the action frames is complicated so we only suggest it if you have time and experience.
+        Full doc on format of a game frame at: https://docs.c1games.com/json-docs.html
+        """
+        # Let's record at what position we get scored on
+        state = json.loads(turn_string)
+        events = state["events"]
+        breaches = events["breach"]
+        for breach in breaches:
+            location = breach[0]
+            unit_owner_self = True if breach[4] == 1 else False
+            # When parsing the frame data directly,
+            # 1 is integer for yourself, 2 is opponent (StarterKit code uses 0, 1 as player_index instead)
+            if not unit_owner_self:
+                gamelib.debug_write("Got scored on at: {}".format(location))
+                self.scored_on_locations.append(location)
+                gamelib.debug_write("All locations: {}".format(self.scored_on_locations))
 
 
 if __name__ == "__main__":
