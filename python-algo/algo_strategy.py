@@ -71,13 +71,12 @@ class FirstAlgo(gamelib.AlgoCore):
                 pqueue.append([50 + y, firewalls[x], [15 + x, y], True])
 
         for y in range(13, 7, -1):
-            pqueue.append([12, None, [12, y], False])
-            pqueue.append([12, None, [15, y], False])
-
-        for x in range(1, 3):
-            for y in range(13, 10, -1):
-                pqueue.append([10 + y, None, [10 - x + 2, y], False])
-                pqueue.append([10 + y, None, [15 + x, y], False])
+            pqueue.append([13 + y, None, [12, y], False])
+            pqueue.append([13 + y, None, [15, y], False])
+            pqueue.append([10 + y, None, [10 - x + 2, y], False])
+            pqueue.append([10 + y, None, [15 + x, y], False])
+            pqueue.append([6, None, [12, 10], False])
+            pqueue.append([6, None, [15, 10], False])
 
         pqueue = sorted(pqueue, key = lambda x: x[0], reverse = True)
 
