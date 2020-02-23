@@ -61,12 +61,20 @@ class FirstAlgo(gamelib.AlgoCore):
         for x in range(3):
             pqueue.append([100, FILTER, [10 - x + 2, 13], True])
             pqueue.append([100, FILTER, [15 + x, 13], True])
+
+            pqueue.append([95 - 30*x, DESTRUCTOR, [10 - x + 2, 12], True])
+            pqueue.append([95 - 30*x, DESTRUCTOR, [15 + x, 12], True])
+
         for x in range(3):
-            for y in range(12, 7, -1):
+            for y in range(11, 7, -1):
                 pqueue.append([50 + y, firewalls[x], [10 - x + 2, y], True])
                 pqueue.append([50 + y, firewalls[x], [15 + x, y], True])
 
-        for x in range(3):
+        for y in range(13, 7, -1):
+            pqueue.append([12, None, [12, y], False])
+            pqueue.append([12, None, [15, y], False])
+
+        for x in range(1, 3):
             for y in range(13, 10, -1):
                 pqueue.append([10 + y, None, [10 - x + 2, y], False])
                 pqueue.append([10 + y, None, [15 + x, y], False])
