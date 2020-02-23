@@ -175,6 +175,13 @@ class FirstAlgo(gamelib.AlgoCore):
                 self.scored_on_locations.append(location)
                 gamelib.debug_write("All locations: {}".format(self.scored_on_locations))
 
+    def filter_blocked_locations(self, locations, game_state):
+        filtered = []
+        for location in locations:
+            if not game_state.contains_stationary_unit(location):
+                filtered.append(location)
+        return filtered
+
     def offensive_strategy(self, game_state):
         our_resources, enemy_resources = game_state.get_resources(player_index=0), game_state.get_resources(
             player_index=1)
