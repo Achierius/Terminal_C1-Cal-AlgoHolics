@@ -72,11 +72,11 @@ class FirstAlgo(gamelib.AlgoCore):
 
         for y in range(13, 7, -1):
             pqueue.append([13 + y, None, [12, y], False])
+            pqueue.append([10 + y, None, [11, y], False])
             pqueue.append([13 + y, None, [15, y], False])
-            pqueue.append([10 + y, None, [10 - x + 2, y], False])
-            pqueue.append([10 + y, None, [15 + x, y], False])
-            pqueue.append([6, None, [12, 10], False])
-            pqueue.append([6, None, [15, 10], False])
+            pqueue.append([10 + y, None, [16, y], False])
+            pqueue.append([6  + y, None, [11, y], False])
+            pqueue.append([6  + y, None, [15, y], False])
 
         pqueue = sorted(pqueue, key = lambda x: x[0], reverse = True)
 
